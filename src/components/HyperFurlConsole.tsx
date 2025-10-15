@@ -6,16 +6,9 @@ import { PromptInput } from './PromptInput';
 import { StyleSelector } from './StyleSelector';
 import { UnfurlButton } from './UnfurlButton';
 import { ImageDisplay } from './ImageDisplay';
-import { WaveformDisplay } from './WaveformDisplay';
 
 interface GeneratedImage {
   image: string;
-  speech?: {
-    audioUrl: string;
-    expandedText: string;
-    originalText: string;
-    voice: string;
-  };
   seed: string;
   styleHint?: string;
   unfurlResult: {
@@ -35,13 +28,9 @@ export function HyperFurlConsole() {
   const [prompt, setPrompt] = useState('');
   const [selectedStyle, setSelectedStyle] = useState<string>('');
   const [isGenerating, setIsGenerating] = useState(false);
-  
-  // Debug: Log state changes
-  console.log('isGenerating:', isGenerating, 'prompt:', prompt);
   const [generatedImage, setGeneratedImage] = useState<GeneratedImage | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [showInspector, setShowInspector] = useState(false);
-
   const consoleRef = useRef<HTMLDivElement>(null);
 
   const handleUnfurl = async () => {
@@ -59,7 +48,6 @@ export function HyperFurlConsole() {
         body: JSON.stringify({
           seed: prompt,
           styleHint: selectedStyle || undefined,
-          voice: 'af_nicole',
         }),
       });
 
@@ -89,6 +77,7 @@ export function HyperFurlConsole() {
       handleUnfurl();
     }
   };
+
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 relative">
@@ -307,13 +296,6 @@ export function HyperFurlConsole() {
             </AnimatePresence>
           </div>
 
-          {/* Waveform Display (for speech integration) */}
-          <div className="relative z-10 mt-6">
-            <WaveformDisplay 
-              speechData={generatedImage?.speech} 
-              isGenerating={isGenerating}
-            />
-          </div>
 
           {/* Bottom Control Buttons */}
           <div className="relative z-10 mt-6 flex justify-center space-x-4">

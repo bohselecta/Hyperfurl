@@ -51,7 +51,7 @@ export function UnfurlButton({ onClick, disabled = false, isGenerating = false }
         <motion.div
           className="absolute inset-0"
           animate={{
-            x: ['-100%', '100%', '-100%']
+            x: ['-50%', '150%', '-50%']
           }}
           transition={{
             duration: 3,
@@ -60,7 +60,7 @@ export function UnfurlButton({ onClick, disabled = false, isGenerating = false }
             times: [0, 0.5, 1]
           }}
           style={{
-            width: '25%',
+            width: '40%',
             height: '100%',
             background: 'linear-gradient(90deg, transparent 0%, rgba(98,225,255,0.6) 30%, rgba(98,225,255,0.8) 50%, rgba(98,225,255,0.6) 70%, transparent 100%)',
             filter: 'blur(0.5px)',

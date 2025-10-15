@@ -1,12 +1,12 @@
-// API route for image and speech generation
+// API route for image generation
 import { NextRequest, NextResponse } from 'next/server';
-import { generateImage, generateSpeech } from '@/lib/deepinfra';
+import { generateImage } from '@/lib/deepinfra';
 import { UnfurlEngine } from '@/lib/unfurl-engine';
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { seed, styleHint, model = 'black-forest-labs/FLUX-1-dev', voice = 'af_nicole' } = body;
+    const { seed, styleHint, model = 'black-forest-labs/FLUX-1-dev' } = body;
 
     if (!seed) {
       return NextResponse.json(
@@ -19,22 +19,13 @@ export async function POST(request: NextRequest) {
     const unfurlEngine = new UnfurlEngine();
     const unfurlResult = unfurlEngine.unfurl(seed, styleHint);
 
-    // Generate image first, then try speech generation
+    // Generate image
     const imageUrl = await generateImage(unfurlResult.final_prompt, model);
-    
-    // Try to generate speech, but don't fail if it doesn't work
-    let speechResult = null;
-    try {
-      speechResult = await generateSpeech(unfurlResult.final_prompt, voice);
-    } catch (speechError) {
-      console.warn('Speech generation failed, continuing without speech:', speechError);
-    }
 
-    // Return both the generated image, speech, and the unfurl analysis
+    // Return the generated image and the unfurl analysis
     return NextResponse.json({
       success: true,
       image: imageUrl,
-      speech: speechResult,
       seed,
       styleHint,
       unfurlResult,

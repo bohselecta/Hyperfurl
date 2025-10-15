@@ -99,26 +99,15 @@ export function ImageDisplay({
               className="w-full h-full bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center"
             >
               <div className="text-center">
-                {/* Dual Loading Spinners */}
-                <div className="flex justify-center space-x-8 mb-6">
-                  {/* Image Generation Spinner */}
+                {/* Image Generation Spinner */}
+                <div className="flex justify-center">
                   <div className="text-center">
-                    <motion.div
-                      animate={{ rotate: 360 }}
-                      transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                      className="w-12 h-12 border-4 border-hf-cyan/30 border-t-hf-cyan rounded-full mx-auto mb-2"
+                    <img 
+                      src="/video-loading.png" 
+                      alt="Generating image..." 
+                      className="w-12 h-12 mx-auto mb-2 animate-spin"
                     />
                     <p className="text-hf-cyan text-sm font-medium">Generating Image</p>
-                  </div>
-                  
-                  {/* Speech Generation Spinner */}
-                  <div className="text-center">
-                    <motion.div
-                      animate={{ rotate: 360 }}
-                      transition={{ duration: 2, repeat: Infinity, ease: "linear", delay: 0.5 }}
-                      className="w-12 h-12 border-4 border-hf-magenta/30 border-t-hf-magenta rounded-full mx-auto mb-2"
-                    />
-                    <p className="text-hf-magenta text-sm font-medium">Creating Audio</p>
                   </div>
                 </div>
                 
@@ -239,33 +228,6 @@ export function ImageDisplay({
         </AnimatePresence>
       </motion.div>
 
-      {/* Image metadata */}
-      {generatedImage && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mt-6 text-center"
-        >
-            <div className="inline-flex items-center space-x-4 px-6 py-3 bg-hf-glass/10 rounded-full">
-            <div className="flex items-center space-x-2">
-              <div className="w-2 h-2 bg-hf-cyan rounded-full animate-pulse" />
-              <span className="text-sm text-hf-glass/80">Generated</span>
-            </div>
-            <div className="w-px h-4 bg-hf-glass/30" />
-            <span className="text-sm text-hf-glass/60">
-              {new Date(generatedImage.timestamp).toLocaleTimeString()}
-            </span>
-            {generatedImage.styleHint && (
-              <>
-                <div className="w-px h-4 bg-hf-glass/30" />
-                <span className="text-sm text-hf-cyan capitalize">
-                  {generatedImage.styleHint} style
-                </span>
-              </>
-            )}
-          </div>
-        </motion.div>
-      )}
     </div>
   );
 }

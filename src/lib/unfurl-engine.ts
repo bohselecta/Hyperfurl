@@ -86,37 +86,66 @@ export class UnfurlEngine {
       "dynamic composition with leading lines",
       "close-up macro shot",
       "wide angle environmental shot",
-      "over-the-shoulder perspective"
+      "over-the-shoulder perspective",
+      "bird's eye view composition",
+      "low angle dramatic perspective",
+      "symmetrical balanced framing",
+      "asymmetric dynamic composition",
+      "diagonal composition with tension"
     ];
 
-    const lenses = ["35mm lens", "50mm lens", "85mm lens", "24mm wide-angle lens", "100mm macro lens"];
+    const lenses = [
+      "35mm lens", "50mm lens", "85mm lens", "24mm wide-angle lens", 
+      "100mm macro lens", "200mm telephoto lens", "16mm ultra-wide lens",
+      "135mm portrait lens", "28mm street lens", "70-200mm zoom lens"
+    ];
+    
     const lighting = [
       "soft natural lighting with rim light",
       "dramatic chiaroscuro lighting",
       "neon-lit atmosphere with backlighting",
       "golden hour sunlight",
-      "moody overcast sky"
+      "moody overcast sky",
+      "blue hour twilight glow",
+      "harsh midday shadows",
+      "warm tungsten interior lighting",
+      "cool fluorescent lighting",
+      "candlelight with warm shadows"
     ];
+    
     const atmospheres = [
       "with volumetric fog and light rays",
       "with rain and wet reflections",
       "with dust motes in the air",
       "with dramatic shadows",
-      "with ethereal glow"
+      "with ethereal glow",
+      "with steam and mist",
+      "with lens flares and bokeh",
+      "with atmospheric haze",
+      "with particle effects",
+      "with depth of field blur"
     ];
+    
     const palettes = [
       "warm golden and amber tones",
       "cool blue and cyan palette",
       "vibrant magenta and purple hues",
       "monochrome with silver highlights",
-      "pastel pink and mint colors"
+      "pastel pink and mint colors",
+      "earth tones with rust accents",
+      "electric neon color scheme",
+      "desaturated sepia tones",
+      "high contrast black and white",
+      "vibrant complementary colors"
     ];
 
-    const composition = compositions[Math.floor(Math.random() * compositions.length)];
-    const lens = lenses[Math.floor(Math.random() * lenses.length)];
-    const light = lighting[Math.floor(Math.random() * lighting.length)];
-    const atmosphere = atmospheres[Math.floor(Math.random() * atmospheres.length)];
-    const palette = palettes[Math.floor(Math.random() * palettes.length)];
+    // Use timestamp-based randomization for better variety
+    const now = Date.now();
+    const composition = compositions[now % compositions.length];
+    const lens = lenses[(now + 1) % lenses.length];
+    const light = lighting[(now + 2) % lighting.length];
+    const atmosphere = atmospheres[(now + 3) % atmospheres.length];
+    const palette = palettes[(now + 4) % palettes.length];
 
     return `${composition} with ${lens}, ${light}, ${atmosphere}, ${palette}`;
   }
@@ -128,7 +157,12 @@ export class UnfurlEngine {
       "with realistic material properties and subsurface scattering",
       "with detailed craftsmanship and artisanal quality",
       "with organic textures and natural weathering",
-      "with polished surfaces and mirror-like reflections"
+      "with polished surfaces and mirror-like reflections",
+      "with weathered patina and age marks",
+      "with metallic sheen and industrial finish",
+      "with fabric textures and woven patterns",
+      "with crystalline structures and geometric forms",
+      "with liquid surfaces and fluid dynamics"
     ];
 
     const microDetails = [
@@ -136,7 +170,12 @@ export class UnfurlEngine {
       "subtle fingerprints and smudges",
       "fine dust particles in the air",
       "delicate edge highlights and fresnel effects",
-      "intricate shadow patterns"
+      "intricate shadow patterns",
+      "tiny scratches and wear patterns",
+      "reflective surfaces catching light",
+      "translucent materials with depth",
+      "surface tension effects on liquids",
+      "crystalline formations and mineral deposits"
     ];
 
     const props = [
@@ -144,7 +183,12 @@ export class UnfurlEngine {
       "atmospheric particles and floating elements",
       "architectural details and structural elements",
       "natural elements like leaves, water, or stone",
-      "mysterious objects hinting at deeper meaning"
+      "mysterious objects hinting at deeper meaning",
+      "vintage tools and mechanical components",
+      "organic growth patterns and botanical elements",
+      "geometric shapes and mathematical forms",
+      "cultural symbols and artistic motifs",
+      "technological interfaces and digital elements"
     ];
 
     const storyCues = [
@@ -152,13 +196,20 @@ export class UnfurlEngine {
       "evoking a sense of wonder and discovery",
       "capturing the essence of human connection",
       "telling a story of transformation and growth",
-      "creating an atmosphere of mystery and intrigue"
+      "creating an atmosphere of mystery and intrigue",
+      "conveying a sense of timelessness and permanence",
+      "expressing the beauty of decay and renewal",
+      "showing the intersection of nature and technology",
+      "revealing hidden patterns and connections",
+      "inviting exploration and interpretation"
     ];
 
-    const texture = textures[Math.floor(Math.random() * textures.length)];
-    const micro = microDetails[Math.floor(Math.random() * microDetails.length)];
-    const prop = props[Math.floor(Math.random() * props.length)];
-    const story = storyCues[Math.floor(Math.random() * storyCues.length)];
+    // Use timestamp-based randomization for better variety
+    const now = Date.now();
+    const texture = textures[(now + 5) % textures.length];
+    const micro = microDetails[(now + 6) % microDetails.length];
+    const prop = props[(now + 7) % props.length];
+    const story = storyCues[(now + 8) % storyCues.length];
 
     return `${texture}, ${micro}, ${prop}, ${story}`;
   }
