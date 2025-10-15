@@ -9,7 +9,6 @@ interface SpeechData {
   expandedText: string;
   originalText: string;
   voice: string;
-  useBrowserTTS?: boolean;
 }
 
 interface WaveformDisplayProps {
@@ -22,7 +21,6 @@ export function WaveformDisplay({ speechData, isGenerating = false }: WaveformDi
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const audioRef = useRef<HTMLAudioElement>(null);
-  const speechUtteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
 
   // Debug logging
   console.log('WaveformDisplay speechData:', speechData);
@@ -70,102 +68,24 @@ export function WaveformDisplay({ speechData, isGenerating = false }: WaveformDi
     }
 
     console.log('Play button clicked:', { 
-      useBrowserTTS: speechData.useBrowserTTS, 
       hasAudioUrl: !!speechData.audioUrl,
       expandedText: speechData.expandedText?.substring(0, 100) + '...'
     });
 
-    if (speechData.useBrowserTTS) {
-      // Use browser speech synthesis
-      if (isPlaying) {
-        console.log('Stopping speech synthesis');
-        window.speechSynthesis.cancel();
-        setIsPlaying(false);
-      } else {
-        console.log('Starting speech synthesis');
-        
-        // Check if speech synthesis is available
-        if (!('speechSynthesis' in window)) {
-          console.error('Speech synthesis not supported in this browser');
-          alert('Speech synthesis is not supported in this browser');
-          return;
-        }
-
-        const utterance = new SpeechSynthesisUtterance(speechData.expandedText);
-        utterance.rate = 0.9;
-        utterance.pitch = 1;
-        utterance.volume = 0.8;
-        utterance.lang = 'en-US';
-        
-        utterance.onstart = () => {
-          console.log('Speech synthesis started');
-          setIsPlaying(true);
-        };
-        utterance.onend = () => {
-          console.log('Speech synthesis ended');
-          setIsPlaying(false);
-        };
-        utterance.onerror = (event) => {
-          console.error('Speech synthesis error:', event);
-          setIsPlaying(false);
-          alert('Speech synthesis failed: ' + event.error);
-        };
-        
-        speechUtteranceRef.current = utterance;
-        
-        try {
-          window.speechSynthesis.speak(utterance);
-        } catch (error) {
-          console.error('Error starting speech synthesis:', error);
-          alert('Failed to start speech synthesis: ' + (error instanceof Error ? error.message : String(error)));
-        }
-      }
-    } else if (audioRef.current && speechData.audioUrl) {
-      // Use audio file
-      console.log('Using audio file playback');
+    if (audioRef.current && speechData.audioUrl) {
+      // Use AI audio file only
+      console.log('Using AI audio file playback');
       if (isPlaying) {
         audioRef.current.pause();
+        setIsPlaying(false);
       } else {
         audioRef.current.play().catch(error => {
-          console.error('Audio playback error:', error);
-          console.log('Falling back to browser TTS due to audio error');
-          
-          // Fallback to browser TTS if audio fails
-          if (speechData.expandedText) {
-            const utterance = new SpeechSynthesisUtterance(speechData.expandedText);
-            utterance.rate = 0.9;
-            utterance.pitch = 1;
-            utterance.volume = 0.8;
-            utterance.lang = 'en-US';
-            
-            utterance.onstart = () => setIsPlaying(true);
-            utterance.onend = () => setIsPlaying(false);
-            utterance.onerror = () => setIsPlaying(false);
-            
-            speechUtteranceRef.current = utterance;
-            window.speechSynthesis.speak(utterance);
-          }
+          console.error('AI audio playback error:', error);
         });
+        setIsPlaying(true);
       }
-      setIsPlaying(!isPlaying);
     } else {
-      console.log('No audio element or audio URL available, using browser TTS');
-      
-      // Fallback to browser TTS
-      if (speechData.expandedText) {
-        const utterance = new SpeechSynthesisUtterance(speechData.expandedText);
-        utterance.rate = 0.9;
-        utterance.pitch = 1;
-        utterance.volume = 0.8;
-        utterance.lang = 'en-US';
-        
-        utterance.onstart = () => setIsPlaying(true);
-        utterance.onend = () => setIsPlaying(false);
-        utterance.onerror = () => setIsPlaying(false);
-        
-        speechUtteranceRef.current = utterance;
-        window.speechSynthesis.speak(utterance);
-      }
+      console.log('No AI audio available');
     }
   };
 
@@ -190,9 +110,9 @@ export function WaveformDisplay({ speechData, isGenerating = false }: WaveformDi
             </div>
           </div>
           <div>
-            <h3 className="text-sm font-medium text-hf-glass">Spoken Word</h3>
+            <h3 className="text-sm font-medium text-hf-glass">Audio</h3>
             <p className="text-xs text-hf-glass/60">
-              {isGenerating ? 'Generating speech...' : 'AI voice narration'}
+              {isGenerating ? 'Generating...' : 'Ready to play'}
             </p>
           </div>
         </div>
@@ -243,43 +163,22 @@ export function WaveformDisplay({ speechData, isGenerating = false }: WaveformDi
       {/* Progress bar */}
       <div className="relative mb-2">
         <div className="w-full h-2 bg-hf-glass/10 rounded-full overflow-hidden">
-          {speechData?.useBrowserTTS ? (
-            <motion.div
-              className="h-full bg-gradient-to-r from-hf-cyan to-hf-magenta rounded-full"
-              animate={{
-                width: isPlaying ? '100%' : '0%',
-              }}
-              transition={{ duration: 0.3 }}
-            />
-          ) : (
-            <motion.div
-              className="h-full bg-gradient-to-r from-hf-cyan to-hf-magenta rounded-full"
-              animate={{
-                width: duration > 0 ? `${(currentTime / duration) * 100}%` : '0%',
-              }}
-              transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            />
-          )}
+          <motion.div
+            className="h-full bg-gradient-to-r from-hf-cyan to-hf-magenta rounded-full"
+            animate={{
+              width: duration > 0 ? `${(currentTime / duration) * 100}%` : '0%',
+            }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+          />
         </div>
       </div>
 
       {/* Time display */}
-      {!speechData?.useBrowserTTS && (
-        <div className="flex justify-between text-xs text-hf-glass/60">
-          <span>{formatTime(currentTime)}</span>
-          <span>{formatTime(duration)}</span>
-        </div>
-      )}
-
-      {/* Voice info */}
-      <div className="mt-3 pt-3 border-t border-hf-glass/20">
-        <div className="flex items-center justify-between">
-          <span className="text-xs text-hf-glass/60">Voice:</span>
-          <span className="text-xs text-hf-cyan">
-            {speechData?.useBrowserTTS ? 'Browser TTS (Fallback)' : 'BELLA'}
-          </span>
-        </div>
+      <div className="flex justify-between text-xs text-hf-glass/60">
+        <span>{formatTime(currentTime)}</span>
+        <span>{formatTime(duration)}</span>
       </div>
+
     </motion.div>
   );
 }

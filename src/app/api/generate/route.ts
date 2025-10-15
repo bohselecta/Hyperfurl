@@ -6,7 +6,7 @@ import { UnfurlEngine } from '@/lib/unfurl-engine';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { seed, styleHint, model = 'black-forest-labs/FLUX-1-dev', voice = 'af_bella' } = body;
+    const { seed, styleHint, model = 'black-forest-labs/FLUX-1-dev', voice = 'af_nicole' } = body;
 
     if (!seed) {
       return NextResponse.json(

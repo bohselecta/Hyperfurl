@@ -59,7 +59,7 @@ export function HyperFurlConsole() {
         body: JSON.stringify({
           seed: prompt,
           styleHint: selectedStyle || undefined,
-          voice: 'af_bella',
+          voice: 'af_nicole',
         }),
       });
 

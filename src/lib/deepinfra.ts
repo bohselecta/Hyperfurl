@@ -35,15 +35,15 @@ export async function expandTextWithDeepSeek(text: string) {
         messages: [
           {
             role: 'system',
-            content: 'You are a master storyteller and narrator. Transform image prompts into rich, vivid narratives that paint a complete picture. Use descriptive language, sensory details, and emotional depth. Keep it engaging and cinematic, like describing a scene from a movie.'
+            content: 'You are a concise image describer. Transform image prompts into simple, clear descriptions in 1-2 sentences. Focus on the main subject and key visual elements only. Avoid sound effects, scene details, or cinematic language. Keep it brief and factual.'
           },
           {
             role: 'user',
-            content: `Transform this image prompt into a rich, detailed narrative that would be perfect for audio narration: "${text}"`
+            content: `Describe this image prompt in 1-2 simple sentences: "${text}"`
           }
         ],
-        max_tokens: 300,
-        temperature: 0.8
+        max_tokens: 100,
+        temperature: 0.3
       })
     });
 
@@ -59,96 +59,56 @@ export async function expandTextWithDeepSeek(text: string) {
   }
 }
 
-export async function generateSpeech(text: string, voice: string = 'af_bella') {
+export async function generateSpeech(text: string, voice: string = 'af_nicole') {
   try {
     // First expand the text with DeepSeek
     const expandedText = await expandTextWithDeepSeek(text);
     
-    // Use DeepInfra inference API for Kokoro-82M
-    const response = await fetch('https://api.deepinfra.com/v1/inference/hexgrad/Kokoro-82M', {
+    // Use DeepInfra OpenAI-compatible Speech API
+    const response = await fetch('https://api.deepinfra.com/v1/openai/audio/speech', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${DEEPINFRA_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        input: expandedText
+        model: 'hexgrad/Kokoro-82M',
+        voice: voice,
+        input: expandedText,
+        response_format: 'mp3',
+        speed: 1.0
       })
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('DeepInfra Kokoro API error:', response.status, errorText);
+      console.error('DeepInfra TTS API error:', response.status, errorText);
       
-      // Fallback to browser TTS if API fails
-      return {
-        audioUrl: null,
-        expandedText,
-        originalText: text,
-        voice: voice,
-        useBrowserTTS: true
-      };
+      // Return null if API fails - no fallback to browser TTS
+      return null;
     }
 
-    // Parse the JSON response from inference API
-    const result = await response.json();
-    console.log('Kokoro API response:', result);
-
-    // Check if we got audio data in the response
-    if (result.audio) {
-      // Convert base64 audio to blob URL
-      const binaryString = atob(result.audio);
-      const bytes = new Uint8Array(binaryString.length);
-      for (let i = 0; i < binaryString.length; i++) {
-        bytes[i] = binaryString.charCodeAt(i);
-      }
-      const audioBlob = new Blob([bytes], { type: 'audio/mp3' });
-      const audioUrl = URL.createObjectURL(audioBlob);
-      
-      console.log('Created audio URL from base64:', audioUrl, 'Blob size:', audioBlob.size);
-      
-      return {
-        audioUrl,
-        expandedText,
-        originalText: text,
-        voice: voice,
-        useBrowserTTS: false
-      };
-    } else if (result.output) {
-      // Try to handle different output formats
-      console.log('Got output field:', typeof result.output);
-      
-      // If output is a URL, use it directly
-      if (typeof result.output === 'string' && result.output.startsWith('http')) {
-        return {
-          audioUrl: result.output,
-          expandedText,
-          originalText: text,
-          voice: voice,
-          useBrowserTTS: false
-        };
-      }
-    }
-
-    console.warn('No audio data in Kokoro response, falling back to browser TTS');
+    // Get the audio data as ArrayBuffer
+    const audioBuffer = await response.arrayBuffer();
+    
+    // Convert ArrayBuffer to Blob and create object URL
+    const audioBlob = new Blob([audioBuffer], { type: 'audio/mp3' });
+    const audioUrl = URL.createObjectURL(audioBlob);
+    
+    console.log('Created audio URL from DeepInfra TTS:', audioUrl, 'Blob size:', audioBlob.size);
+    
     return {
-      audioUrl: null,
+      audioUrl,
       expandedText,
       originalText: text,
       voice: voice,
-      useBrowserTTS: true
+      useBrowserTTS: false
     };
   } catch (error) {
     console.error('Error generating speech:', error);
     
-    // Fallback to browser TTS
-    return {
-      audioUrl: null,
-      expandedText: text, // Use original text if expansion fails
-      originalText: text,
-      voice: voice,
-      useBrowserTTS: true
-    };
+    // Return null if speech generation fails - no fallback to browser TTS
+    return null;
   }
 }
 
@@ -162,6 +122,8 @@ export async function getAvailableImageModels() {
 
 export async function getAvailableVoiceModels() {
   return [
+    { id: 'af_nicole', name: 'NICOLE (Soft spoken voice)' },
+    { id: 'ai_nova', name: 'NOVA (Natural AI Voice)' },
     { id: 'af_bella', name: 'BELLA (Warm, friendly female voice)' },
     { id: 'af_sarah', name: 'SARAH (Clear, professional female voice)' },
     { id: 'af_emma', name: 'EMMA (Energetic, youthful female voice)' },
