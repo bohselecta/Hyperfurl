@@ -34,7 +34,7 @@ export function UnfurlButton({ onClick, disabled = false, isGenerating = false }
         animate={isPressed ? { scale: 0.98 } : { scale: 1 }}
         className={`
           relative overflow-hidden rounded-2xl font-bold font-display text-lg
-          transition-all duration-300 px-12 py-6 min-w-[395px] h-[68px]
+          transition-all duration-300 px-6 py-4 md:px-16 md:py-8 w-full max-w-[395px] md:max-w-[500px] h-[56px] md:h-[80px]
           ${disabled || isGenerating
             ? 'opacity-50 cursor-not-allowed'
             : 'cursor-pointer'
@@ -66,10 +66,11 @@ export function UnfurlButton({ onClick, disabled = false, isGenerating = false }
             filter: 'blur(0.5px)',
             boxShadow: '0 0 10px rgba(98,225,255,0.4)'
           }}
+          className="h-full"
         />
 
         {/* Button content */}
-        <div className="relative z-10 flex items-center justify-center space-x-3 h-full">
+        <div className="relative z-10 flex items-center justify-center space-x-2 md:space-x-3 h-full md:-translate-y-3.5">
           <AnimatePresence mode="wait">
             {isGenerating ? (
               <motion.div
@@ -77,7 +78,7 @@ export function UnfurlButton({ onClick, disabled = false, isGenerating = false }
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
-                className="flex items-center space-x-3"
+                className="flex items-center justify-center space-x-2 md:space-x-3"
               >
                 {/* Spinning loader */}
                 <motion.div
@@ -85,7 +86,7 @@ export function UnfurlButton({ onClick, disabled = false, isGenerating = false }
                   transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
                   className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full"
                 />
-                <span className="text-white font-bold">Unfurling...</span>
+                <span className="text-white font-bold text-sm md:text-lg">Unfurling...</span>
               </motion.div>
             ) : (
               <motion.div
@@ -93,14 +94,14 @@ export function UnfurlButton({ onClick, disabled = false, isGenerating = false }
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
-                className="flex items-center space-x-3"
+                className="flex items-center justify-center space-x-2 md:space-x-3"
               >
-                <span className="text-white font-bold">UNFURL</span>
+                <span className="text-white font-bold text-sm md:text-lg">UNFURL</span>
                 <motion.div
                   animate={{ rotate: [0, 360] }}
                   transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
                 >
-                  <Expand className="w-5 h-5 text-white" />
+                  <Expand className="w-4 h-4 md:w-6 md:h-6 text-white" />
                 </motion.div>
               </motion.div>
             )}
